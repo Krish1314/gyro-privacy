@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import serverless from 'serverless-http';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const JWT_SECRET = 'gyro-privacy-super-secret-key-123!';
+const JWT_SECRET = process.env.JWT_SECRET || 'gyro-privacy-super-secret-key-123!';
+
+// In serverless, we don't start the server with app.listen()
+// We handle routing via the serverless wrapper
 
 app.use(cors());
 app.use(express.json());
@@ -52,6 +55,5 @@ app.get('/api/protected-data', authenticateToken, (req, res) => {
     });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Backend listening on port ${PORT}`);
-});
+// Export the serverless wrapped app for Netlify
+export const handler = serverless(app);
